@@ -71,7 +71,6 @@ void printToLCD(String x, String y){
 }
 
 // Precondition: Value is less then 1024
-// // TODO: Need to refactor with a pointer for a char array passed in.
 String intToBinaryString(int value) {
     int bitValue;
     String binary = "0000000000";
@@ -79,12 +78,12 @@ String intToBinaryString(int value) {
       return binary;
     }
     // 10 bits to loop through
-    for(int bitPos = 9; bitPos >= 0; bitPos--) {
+    for(int bitPos = 9, i = 0; bitPos >= 0; bitPos--, i++) {
       bitValue = value >> bitPos;
       if(bitValue & 1) {
-        binary[bitPos] = '1';
+        binary[i] = '1';
       } else {
-        binary[bitPos] = '0';
+        binary[i] = '0';
       }
     }
     return binary;
