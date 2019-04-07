@@ -10,14 +10,21 @@ JoystickControlledActivator::JoystickControlledActivator(int joystickPin, int ac
   this -> activatePin = activatePin;
   pinMode(this -> activatePin, OUTPUT);
   digitalWrite(this -> activatePin, active);
+  this -> active = active;
 }
 
 void JoystickControlledActivator::activate() {
   digitalWrite(this -> activatePin, HIGH);
+  this -> active = true;
 }
 
 void JoystickControlledActivator::deactivate() {
   digitalWrite(this -> activatePin, LOW);
+  this -> active = false;
+}
+
+bool JoystickControlledActivator::isActivated() {
+  return this -> active;
 }
 
 int JoystickControlledActivator::getJoystickPosition() {
