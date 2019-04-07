@@ -1,6 +1,6 @@
 # gobabygo
 
-#Using Servo Control Library
+# Using Servo Control Library
 
 Download a copy of this repo, copy the ServoControl folder into your system Arduino library folder. 
 
