@@ -1,7 +1,6 @@
 
 #include "VehicleMovementController.h"
 
-
 void setup() {
 
 }
