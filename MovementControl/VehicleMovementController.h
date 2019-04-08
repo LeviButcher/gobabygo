@@ -18,6 +18,10 @@ class VehicleMovementController {
     int plugging = false;
     int engagedPluggingTime = 0;
 
+    void engageForward();
+    void engageReverse();
+    void deactivateMovement();
+
 
   public:
     VehicleMovementController(int joystickYPin, int forwardThreshold, int reverseThreshold, int forwardRelayPin, int reverseRelayPin, int frontRangefinderTriggerPin, int  frontRangefinderEchoPin, int backRangefinderTriggerPin, int backRangefinderEchoPin, int antiPlugDelay, int buzzerPin, int buzzerDistance, int stopDistance);
@@ -25,4 +29,5 @@ class VehicleMovementController {
     void buzzToggle();
     void buzzOn();
     void buzzOff();
+    
 };
