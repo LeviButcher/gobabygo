@@ -15,84 +15,119 @@ VehicleMovementController::VehicleMovementController(int joystickYPin, int forwa
   this -> reverseThreshold = reverseThreshold;
 }
 
-
+// TODO: CHANGE JOYSTICK STATE INTO METHODS
 void VehicleMovementController::update(int currentMilli) {
+  //gather variables
   int frontDistance = frontRangefinder -> getDistance();
   int backDistance = rearRangefinder -> getDistance();
-  static int idleTime = 0;
-
-  // Stop car from going forward when object is within stopDistance
-  if(frontDistance <= stopDistance) {
-    forwardJoystickRelay -> deactivate();    
-    this -> buzzOn();
-  }
-  // Stop car from going backward when object is within stopDistance
-  else if( backDistance <= stopDistance) {
-    reverseJoystickRelay -> deactivate();
-    this -> buzzOn();
-  }
-  // Alert driver when object is in buzzerDistance
-  else if(frontDistance <= buzzerDistance || backDistance <= buzzerDistance) {
-    this -> buzzToggle();
-  }
-  // No Objects in stopDistance, we can move the car
-  else {
-      // Don't allow movement until enough time has passed that is greater then antiPlugDelay
-      if(plugging) {
-        if(currentMilli - engagedPluggingTime > antiPlugDelay) {
-          plugging = false;
-          engagedPluggingTime = 0;
-        }
+  int joystickYPos = forwardJoystickRelay -> getJoystickPosition();
+  //Transitions
+  switch(this -> VM_STATE) {
+    case START:
+      VM_STATE = STOPPED;
+      break;
+    case STOPPED:
+      if(joystickYPos >= forwardThreshold && frontDistance > stopDistance) {
+        VM_STATE = FORWARD;
       }
-      // Vehicle is not in plugging state, we can move
-      else {
-        this -> buzzOff();
-        int currJoystickY = forwardJoystickRelay -> getJoystickPosition();
-        // User wants to move forward
-        if(currJoystickY >= forwardThreshold) {
-          // Hack
-          idleTime = 0;
-          // User has went from reverse immediately to forward, engage plugging state
-          if(reverseJoystickRelay -> isActivated()) {
-            // Turn on pluging
-            plugging = true;
-            engagedPluggingTime = millis();
-            this -> deactivateMovement();
-          }
-          // Engage forward Relay
-          else {
-            this -> engageForward();
-          }
-        }
-        // User wants to move backward
-        else if(currJoystickY <= reverseThreshold) {
-          idleTime = 0;
-          // User has went from forward immediately to reverse, engage plugging state
-          if(forwardJoystickRelay -> isActivated()) {
-            // Turn on pluging
-            plugging = true;
-            engagedPluggingTime = millis();
-            this -> deactivateMovement();
-          }
-          // Engage reverse relay
-          else {
-            this -> engageReverse();
-          }
-        }
-        else {
-          // Hack to allow joystick in center to stop car, but only if the joystick has been in center for so long
-          if(idleTime != 0) {
-            if(currentMilli - idleTime > antiPlugDelay) {
-              this -> deactivateMovement();
-              idleTime = 0;
-            }
-          }
-          // Record the starting time of being in center for the hack above
-          else {
-            idleTime = millis();
-          }
-        }
+      else if(joystickYPos < reverseThreshold && backDistance > stopDistance) {
+        VM_STATE = REVERSE;
       }
+      else if(frontDistance <= stopDistance && backDistance > stopDistance) {
+        VM_STATE = LOCK_FORWARD;
+      }
+      else if(backDistance <= stopDistance && frontDistance > stopDistance) {
+        VM_STATE = LOCK_REVERSE;
+      }
+      else if(backDistance <= stopDistance && frontDistance <= stopDistance) {
+        VM_STATE = LOCK_BOTH;
+      }
+      break;
+    case FORWARD:
+      if(joystickYPos < reverseThreshold) {
+        VM_STATE = START_ANTI_PLUGGING;
+      }
+      else if((joystickYPos < forwardThreshold && joystickYPos > reverseThreshold) || frontDistance <= stopDistance) {
+        VM_STATE = STOPPED;
+      }
+      break;
+    case REVERSE:
+      if(joystickYPos > forwardThreshold) {
+        VM_STATE = START_ANTI_PLUGGING;
+      }
+      else if((joystickYPos < forwardThreshold && joystickYPos > reverseThreshold) || backDistance <= stopDistance) {
+        VM_STATE = STOPPED;
+      }
+      break;
+    case START_ANTI_PLUGGING:
+      VM_STATE = ANTI_PLUGGING;
+      break;
+    case ANTI_PLUGGING:
+      if(joystickYPos < reverseThreshold && currentMilli - engagedPluggingTime > antiPlugDelay && backDistance >= stopDistance) {
+        VM_STATE = REVERSE;
+      }
+      else if(joystickYPos > forwardThreshold && currentMilli - engagedPluggingTime > antiPlugDelay && frontDistance >= stopDistance) {
+        VM_STATE = FORWARD;
+      }
+      break;
+    case LOCK_FORWARD:
+      if(joystickYPos < reverseThreshold && backDistance > stopDistance) {
+        VM_STATE = REVERSE;
+      }
+      else if(backDistance <= stopDistance && frontDistance <= stopDistance) {
+        VM_STATE = LOCK_BOTH;
+      }
+      break;
+    case LOCK_REVERSE:
+      if(joystickYPos > forwardThreshold && frontDistance > stopDistance) {
+        VM_STATE = REVERSE;
+      }
+      else if(backDistance <= stopDistance && frontDistance <= stopDistance) {
+        VM_STATE = LOCK_BOTH;
+      }
+      break;
+    case LOCK_BOTH:
+      if(backDistance > stopDistance && frontDistance > stopDistance) {
+        VM_STATE = STOPPED;
+      }
+      if(frontDistance <= stopDistance && backDistance > stopDistance) {
+        VM_STATE = LOCK_FORWARD;
+      }
+      if(backDistance <= stopDistance && frontDistance > stopDistance) {
+        VM_STATE = LOCK_REVERSE;
+      }
+      break;
+    default:
+      this -> VM_STATE = START;
+  }
+  //Actions
+  switch(this -> VM_STATE) {
+    case START:
+      break;
+    case STOPPED:
+      stopVehicle();
+      break;
+    case FORWARD:
+      engageForward();
+      break;
+    case REVERSE:
+      engageReverse();
+      break;
+    case START_ANTI_PLUGGING:
+      engagedPluggingTime = currentMilli;
+      break;
+    case ANTI_PLUGGING:
+      stopVehicle();
+      break;
+    case LOCK_FORWARD:
+      //constant buzz
+      break;
+    case LOCK_REVERSE:
+      break;
+    case LOCK_BOTH:
+      break;
+    default:
+      stopVehicle();
   }
 }
 
@@ -109,18 +144,17 @@ void VehicleMovementController::buzzToggle() {
   digitalWrite(buzzerPin, HIGH);
 }
 
-void VehicleMovementController::deactivateMovement(){
+void VehicleMovementController::stopVehicle(){
   reverseJoystickRelay -> deactivate();
-  forwardJoystickRelay -> deactivate(); 
+  forwardJoystickRelay -> deactivate();
 }
 
 void VehicleMovementController::engageForward(){
   reverseJoystickRelay -> deactivate();
-  forwardJoystickRelay -> activate(); 
+  forwardJoystickRelay -> activate();
 }
 
 void VehicleMovementController::engageReverse(){
   reverseJoystickRelay -> activate();
-  forwardJoystickRelay -> deactivate(); 
+  forwardJoystickRelay -> deactivate();
 }
-

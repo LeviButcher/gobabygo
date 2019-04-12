@@ -17,10 +17,11 @@ class VehicleMovementController {
     int stopDistance;
     int plugging = false;
     int engagedPluggingTime = 0;
+    enum VM_STATES {START, STOPPED, FORWARD, REVERSE, START_ANTI_PLUGGING, ANTI_PLUGGING,LOCK_FORWARD,LOCK_REVERSE,LOCK_BOTH};
+    VM_STATES VM_STATE;
 
     void engageForward();
     void engageReverse();
-    void deactivateMovement();
 
 
   public:
@@ -29,5 +30,6 @@ class VehicleMovementController {
     void buzzToggle();
     void buzzOn();
     void buzzOff();
-    
+    void stopVehicle();
+
 };
