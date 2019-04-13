@@ -24,6 +24,6 @@ void setup() {
 void loop() {
   int mille = millis();
   vehicle -> update(mille);
-  // delay(11);
+  Serial.println(vehicle -> getState());
   delay(100);
 }
