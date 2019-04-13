@@ -5,8 +5,8 @@ VehicleMovementController::VehicleMovementController(int joystickYPin, int forwa
 
   forwardJoystickRelay = new JoystickControlledActivator(joystickYPin, forwardRelayPin);
   reverseJoystickRelay = new JoystickControlledActivator(joystickYPin, reverseRelayPin);
-  rearRangefinder = new Rangefinder(frontRangefinderTriggerPin, frontRangefinderEchoPin);
-  frontRangefinder = new Rangefinder(backRangefinderTriggerPin, backRangefinderEchoPin);
+  frontRangefinder = new Rangefinder(frontRangefinderTriggerPin, frontRangefinderEchoPin);
+  rearRangefinder = new Rangefinder(backRangefinderTriggerPin, backRangefinderEchoPin);
   this -> antiPlugDelay = antiPlugDelay;
   this -> buzzerPin = buzzerPin;
   this -> buzzerDistance = buzzerDistance;
@@ -77,6 +77,9 @@ void VehicleMovementController::update(int currentMilli) {
       else if(backDistance <= stopDistance && frontDistance <= stopDistance) {
         VM_STATE = LOCK_BOTH;
       }
+      else if(joystickYPos > reverseThreshold && joystickYPos < forwardThreshold) {
+        VM_STATE = STOPPED;
+      }
       break;
     case LOCK_REVERSE:
       if(joystickYPos > forwardThreshold && frontDistance > stopDistance) {
@@ -84,6 +87,9 @@ void VehicleMovementController::update(int currentMilli) {
       }
       else if(backDistance <= stopDistance && frontDistance <= stopDistance) {
         VM_STATE = LOCK_BOTH;
+      }
+      else if(joystickYPos > reverseThreshold && joystickYPos < forwardThreshold) {
+        VM_STATE = STOPPED;
       }
       break;
     case LOCK_BOTH:

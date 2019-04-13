@@ -4,6 +4,8 @@
 Rangefinder::Rangefinder(int triggerPin, int echoPin) {
   this -> triggerPin = triggerPin;
   this -> echoPin = echoPin;
+  pinMode(this -> triggerPin, OUTPUT);
+  pinMode(this -> echoPin, INPUT);
 }
 
 int Rangefinder::getDistance() {

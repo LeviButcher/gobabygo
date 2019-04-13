@@ -18,10 +18,12 @@ VehicleMovementController* vehicle;
 
 void setup() {
   vehicle = new VehicleMovementController (JOYSTICK_Y_PIN, FORWARD_THRESHOLD, REVERSE_THRESHOLD, FORWARD_RELAY_PIN, REVERSE_RELAY_PIN, FRONT_RANGEFINDER_TRIGGER_PIN, FRONT_RANGEFINDER_ECHO_PIN, BACK_RANGEFINDER_TRIGGER_PIN, BACK_RANGEFINDER_ECHO_PIN, ANTI_PLUG_DELAY, BUZZER_PIN, BUZZER_DISTANCE, STOP_DISTANCE);
-  
+  Serial.begin(9600);
 }
 
 void loop() {
   int mille = millis();
   vehicle -> update(mille);
+  // delay(11);
+  delay(100);
 }
