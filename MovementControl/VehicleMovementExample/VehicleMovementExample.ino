@@ -15,9 +15,20 @@ const int BUZZER_DISTANCE = 96;
 const int STOP_DISTANCE = 48;
 
 VehicleMovementController* vehicle;
+Rangefinder* rearRangefinder;
+Rangefinder* frontRangefinder;
+JoystickControlledActivator* forwardJoystickRelay;
+JoystickControlledActivator* reverseJoystickRelay;
+
+
 
 void setup() {
-  vehicle = new VehicleMovementController (JOYSTICK_Y_PIN, FORWARD_THRESHOLD, REVERSE_THRESHOLD, FORWARD_RELAY_PIN, REVERSE_RELAY_PIN, FRONT_RANGEFINDER_TRIGGER_PIN, FRONT_RANGEFINDER_ECHO_PIN, BACK_RANGEFINDER_TRIGGER_PIN, BACK_RANGEFINDER_ECHO_PIN, ANTI_PLUG_DELAY, BUZZER_PIN, BUZZER_DISTANCE, STOP_DISTANCE);
+  frontRangefinder = new Rangefinder(FRONT_RANGEFINDER_TRIGGER_PIN, FRONT_RANGEFINDER_ECHO_PIN);
+  rearRangefinder = new Rangefinder(BACK_RANGEFINDER_TRIGGER_PIN, BACK_RANGEFINDER_ECHO_PIN);
+  forwardJoystickRelay = new JoystickControlledActivator(JOYSTICK_Y_PIN, FORWARD_RELAY_PIN);
+  reverseJoystickRelay = new JoystickControlledActivator(JOYSTICK_Y_PIN, REVERSE_RELAY_PIN);
+
+  vehicle = new VehicleMovementController(forwardJoystickRelay, reverseJoystickRelay, frontRangefinder, rearRangefinder, FORWARD_THRESHOLD, REVERSE_THRESHOLD, ANTI_PLUG_DELAY, BUZZER_PIN, BUZZER_DISTANCE, STOP_DISTANCE);
   Serial.begin(9600);
 }
 

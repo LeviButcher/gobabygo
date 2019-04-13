@@ -1,13 +1,11 @@
 #include "VehicleMovementController.h"
 #include "Arduino.h"
-#include <string.h>
 
-VehicleMovementController::VehicleMovementController(int joystickYPin, int forwardThreshold, int reverseThreshold, int forwardRelayPin, int reverseRelayPin, int frontRangefinderTriggerPin, int  frontRangefinderEchoPin, int backRangefinderTriggerPin, int backRangefinderEchoPin, int antiPlugDelay, int buzzerPin, int buzzerDistance, int stopDistance) {
-
-  forwardJoystickRelay = new JoystickControlledActivator(joystickYPin, forwardRelayPin);
-  reverseJoystickRelay = new JoystickControlledActivator(joystickYPin, reverseRelayPin);
-  frontRangefinder = new Rangefinder(frontRangefinderTriggerPin, frontRangefinderEchoPin);
-  rearRangefinder = new Rangefinder(backRangefinderTriggerPin, backRangefinderEchoPin);
+VehicleMovementController::VehicleMovementController(JoystickControlledActivator* forwardRelay, JoystickControlledActivator* reverseRelay, Rangefinder* frontRangefinder, Rangefinder* rearRangefinder, int forwardThreshold, int reverseThreshold, int antiPlugDelay, int buzzerPin, int buzzerDistance, int stopDistance){
+  this -> forwardJoystickRelay = forwardRelay;
+  this -> reverseJoystickRelay = reverseRelay;
+  this -> frontRangefinder = frontRangefinder;
+  this -> rearRangefinder = rearRangefinder;
   this -> antiPlugDelay = antiPlugDelay;
   this -> buzzerPin = buzzerPin;
   this -> buzzerDistance = buzzerDistance;
