@@ -2,6 +2,7 @@
 
 #include "JoystickControlledActivator.h"
 #include "Rangefinder.h"
+#include "DistanceBuzzerControl.h"
 
 class VehicleMovementController {
   private:
@@ -9,11 +10,10 @@ class VehicleMovementController {
     JoystickControlledActivator* reverseJoystickRelay;
     Rangefinder* rearRangefinder;
     Rangefinder* frontRangefinder;
+    DistanceBuzzerControl* buzzerControl;
     int antiPlugDelay;
-    int buzzerPin;
     int forwardThreshold;
     int reverseThreshold;
-    int buzzerDistance;
     int stopDistance;
     int engagedPluggingTime = 0;
     enum VM_STATES {START, STOPPED, FORWARD, REVERSE, START_ANTI_PLUGGING, ANTI_PLUGGING,LOCK_FORWARD,LOCK_REVERSE,LOCK_BOTH};
@@ -24,11 +24,11 @@ class VehicleMovementController {
     void engageForward();
     void engageReverse();
     enum JOYSTICK_STATES getJoystickState();
-    enum DETECTED_OBJECT_STATES getDetectedObjectState();
+    enum DETECTED_OBJECT_STATES getDetectedObjectState(int frontDistance, int backDistance);
 
 
   public:
-    VehicleMovementController(JoystickControlledActivator* forwardRelay, JoystickControlledActivator* reverseRelay, Rangefinder* frontRangefinder, Rangefinder* rearRangefinder, int forwardThreshold, int reverseThreshold, int antiPlugDelay, int buzzerPin, int buzzerDistance, int stopDistance);
+    VehicleMovementController(JoystickControlledActivator* forwardRelay, JoystickControlledActivator* reverseRelay, Rangefinder* frontRangefinder, Rangefinder* rearRangefinder, DistanceBuzzerControl* buzzerControl, int forwardThreshold, int reverseThreshold, int antiPlugDelay, int stopDistance);
 
     void update(int currentMilli);
     void stopVehicle();

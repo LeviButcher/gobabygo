@@ -1,14 +1,13 @@
 #include "VehicleMovementController.h"
 #include "Arduino.h"
 
-VehicleMovementController::VehicleMovementController(JoystickControlledActivator* forwardRelay, JoystickControlledActivator* reverseRelay, Rangefinder* frontRangefinder, Rangefinder* rearRangefinder, int forwardThreshold, int reverseThreshold, int antiPlugDelay, int buzzerPin, int buzzerDistance, int stopDistance){
+VehicleMovementController::VehicleMovementController(JoystickControlledActivator* forwardRelay, JoystickControlledActivator* reverseRelay, Rangefinder* frontRangefinder, Rangefinder* rearRangefinder, DistanceBuzzerControl* buzzerControl, int forwardThreshold, int reverseThreshold, int antiPlugDelay, int stopDistance){
   this -> forwardJoystickRelay = forwardRelay;
   this -> reverseJoystickRelay = reverseRelay;
   this -> frontRangefinder = frontRangefinder;
   this -> rearRangefinder = rearRangefinder;
+  this -> buzzerControl = buzzerControl;
   this -> antiPlugDelay = antiPlugDelay;
-  this -> buzzerPin = buzzerPin;
-  this -> buzzerDistance = buzzerDistance;
   this -> stopDistance = stopDistance;
   this -> forwardThreshold = forwardThreshold;
   this -> reverseThreshold = reverseThreshold;
@@ -16,8 +15,11 @@ VehicleMovementController::VehicleMovementController(JoystickControlledActivator
 
 void VehicleMovementController::update(int currentMilli) {
   //gather variables
+  int frontDistance = frontRangefinder -> getDistance();
+  int backDistance = rearRangefinder -> getDistance();
+  int lowestDistance = frontDistance <= backDistance ? frontDistance : backDistance;
   JOYSTICK_STATES joystickState = getJoystickState();
-  DETECTED_OBJECT_STATES detectedObjectState = getDetectedObjectState();
+  DETECTED_OBJECT_STATES detectedObjectState = getDetectedObjectState(frontDistance, backDistance);
 
   //Transitions
   switch(this -> VM_STATE) {
@@ -132,6 +134,8 @@ void VehicleMovementController::update(int currentMilli) {
     default:
       stopVehicle();
   }
+  //Update buzzerState last
+  buzzerControl -> update(lowestDistance);
 }
 
 void VehicleMovementController::stopVehicle(){
@@ -162,9 +166,8 @@ enum VehicleMovementController::JOYSTICK_STATES VehicleMovementController::getJo
   }
 }
 
-enum VehicleMovementController::DETECTED_OBJECT_STATES VehicleMovementController::getDetectedObjectState(){
-  int frontDistance = frontRangefinder -> getDistance();
-  int backDistance = rearRangefinder -> getDistance();
+enum VehicleMovementController::DETECTED_OBJECT_STATES VehicleMovementController::getDetectedObjectState(int frontDistance, int backDistance){
+
 
   if(frontDistance <= stopDistance && backDistance <= stopDistance) {
     return BOTHSTOP;

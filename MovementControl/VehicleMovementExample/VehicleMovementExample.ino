@@ -19,6 +19,7 @@ Rangefinder* rearRangefinder;
 Rangefinder* frontRangefinder;
 JoystickControlledActivator* forwardJoystickRelay;
 JoystickControlledActivator* reverseJoystickRelay;
+DistanceBuzzerControl* buzzerControl;
 
 
 
@@ -27,8 +28,9 @@ void setup() {
   rearRangefinder = new Rangefinder(BACK_RANGEFINDER_TRIGGER_PIN, BACK_RANGEFINDER_ECHO_PIN);
   forwardJoystickRelay = new JoystickControlledActivator(JOYSTICK_Y_PIN, FORWARD_RELAY_PIN);
   reverseJoystickRelay = new JoystickControlledActivator(JOYSTICK_Y_PIN, REVERSE_RELAY_PIN);
+  buzzerControl = new DistanceBuzzerControl(BUZZER_PIN, BUZZER_DISTANCE, STOP_DISTANCE);
 
-  vehicle = new VehicleMovementController(forwardJoystickRelay, reverseJoystickRelay, frontRangefinder, rearRangefinder, FORWARD_THRESHOLD, REVERSE_THRESHOLD, ANTI_PLUG_DELAY, BUZZER_PIN, BUZZER_DISTANCE, STOP_DISTANCE);
+  vehicle = new VehicleMovementController(forwardJoystickRelay, reverseJoystickRelay, frontRangefinder, rearRangefinder, buzzerControl, FORWARD_THRESHOLD, REVERSE_THRESHOLD, ANTI_PLUG_DELAY, STOP_DISTANCE);
   Serial.begin(9600);
 }
 
