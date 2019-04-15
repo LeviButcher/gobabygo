@@ -1,3 +1,12 @@
+/*
+    VehicleMovementControl
+    Activates 2 relays the contol forward and reverse circuits on a battery controlled vehicle.
+    Also, hooked to 2 rangefinders that detect if a object is so close to the vehicle
+    If so then the Vehicle will stop
+    A delay is also configured to prevent going back and forth between forward and stop frequently
+
+    Author: Levi Butcher, Sean Rickard, Bradley, Robert
+ */
 #pragma once
 
 #include "JoystickControlledActivator.h"
@@ -16,9 +25,10 @@ class VehicleMovementController {
     int reverseThreshold;
     int stopDistance;
     int engagedPluggingTime = 0;
-    enum VM_STATES {START, STOPPED, FORWARD, REVERSE, START_ANTI_PLUGGING, ANTI_PLUGGING,LOCK_FORWARD,LOCK_REVERSE,LOCK_BOTH};
+    int timeTillUpdate;
+    enum VM_STATES {START, STOPPED, FORWARD, REVERSE, START_ANTI_PLUGGING, ANTI_PLUGGING};
     enum JOYSTICK_STATES {JOY_HIGH, JOY_LOW, JOY_MID};
-    enum DETECTED_OBJECT_STATES {FRONTSTOP, BACKSTOP, BOTHSTOP, CLEAR};
+    enum DETECTED_OBJECT_STATES {FRONT, BACK, CLEAR};
     VM_STATES VM_STATE;
 
     void engageForward();
@@ -28,7 +38,7 @@ class VehicleMovementController {
 
 
   public:
-    VehicleMovementController(JoystickControlledActivator* forwardRelay, JoystickControlledActivator* reverseRelay, Rangefinder* frontRangefinder, Rangefinder* rearRangefinder, DistanceBuzzerControl* buzzerControl, int forwardThreshold, int reverseThreshold, int antiPlugDelay, int stopDistance);
+    VehicleMovementController(JoystickControlledActivator* forwardRelay, JoystickControlledActivator* reverseRelay, Rangefinder* frontRangefinder, Rangefinder* rearRangefinder, DistanceBuzzerControl* buzzerControl, int forwardThreshold, int reverseThreshold, int antiPlugDelay, int stopDistance, int timeTillUpdate);
 
     void update(int currentMilli);
     void stopVehicle();

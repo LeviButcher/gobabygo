@@ -1,7 +1,16 @@
+/*
+    VehicleMovementControl
+    Activates 2 relays the contol forward and reverse circuits on a battery controlled vehicle.
+    Also, hooked to 2 rangefinders that detect if a object is so close to the vehicle
+    If so then the Vehicle will stop
+    A delay is also configured to prevent going back and forth between forward and stop frequently
+
+    Author: Levi Butcher, Sean Rickard, Bradley, Robert
+ */
 #include "VehicleMovementController.h"
 #include "Arduino.h"
 
-VehicleMovementController::VehicleMovementController(JoystickControlledActivator* forwardRelay, JoystickControlledActivator* reverseRelay, Rangefinder* frontRangefinder, Rangefinder* rearRangefinder, DistanceBuzzerControl* buzzerControl, int forwardThreshold, int reverseThreshold, int antiPlugDelay, int stopDistance){
+VehicleMovementController::VehicleMovementController(JoystickControlledActivator* forwardRelay, JoystickControlledActivator* reverseRelay, Rangefinder* frontRangefinder, Rangefinder* rearRangefinder, DistanceBuzzerControl* buzzerControl, int forwardThreshold, int reverseThreshold, int antiPlugDelay, int stopDistance, int timeTillUpdate){
   this -> forwardJoystickRelay = forwardRelay;
   this -> reverseJoystickRelay = reverseRelay;
   this -> frontRangefinder = frontRangefinder;
@@ -11,43 +20,41 @@ VehicleMovementController::VehicleMovementController(JoystickControlledActivator
   this -> stopDistance = stopDistance;
   this -> forwardThreshold = forwardThreshold;
   this -> reverseThreshold = reverseThreshold;
+  this -> timeTillUpdate = timeTillUpdate;
 }
 
 void VehicleMovementController::update(int currentMilli) {
-  //gather variables
+  static int timeSinceLastUpdate = 0;
+  // VehicleMovement should only update after timeTillUpdate has passed
+  if(timeSinceLastUpdate + timeTillUpdate > currentMilli) {
+    return;
+  }
+  timeSinceLastUpdate = currentMilli;
+  // gather variables
   int frontDistance = frontRangefinder -> getDistance();
   int backDistance = rearRangefinder -> getDistance();
   int lowestDistance = frontDistance <= backDistance ? frontDistance : backDistance;
   JOYSTICK_STATES joystickState = getJoystickState();
   DETECTED_OBJECT_STATES detectedObjectState = getDetectedObjectState(frontDistance, backDistance);
 
-  //Transitions
+  // Transitions
   switch(this -> VM_STATE) {
     case START:
       VM_STATE = STOPPED;
       break;
     case STOPPED:
-      if(joystickState == JOY_HIGH && (detectedObjectState != FRONTSTOP && detectedObjectState != BOTHSTOP)) {
+      if(joystickState == JOY_HIGH && detectedObjectState != FRONT) {
         VM_STATE = FORWARD;
       }
-      else if(joystickState == JOY_LOW && (detectedObjectState != BACKSTOP && detectedObjectState!= BOTHSTOP)) {
+      else if(joystickState == JOY_LOW && detectedObjectState != BACK) {
         VM_STATE = REVERSE;
-      }
-      else if(detectedObjectState == FRONTSTOP) {
-        VM_STATE = LOCK_FORWARD;
-      }
-      else if(detectedObjectState == BACKSTOP) {
-        VM_STATE = LOCK_REVERSE;
-      }
-      else if(detectedObjectState == BOTHSTOP) {
-        VM_STATE = LOCK_BOTH;
       }
       break;
     case FORWARD:
       if(joystickState == JOY_LOW) {
         VM_STATE = START_ANTI_PLUGGING;
       }
-      else if(joystickState == JOY_MID || (detectedObjectState == FRONTSTOP || detectedObjectState == BOTHSTOP)) {
+      else if(joystickState == JOY_MID || detectedObjectState == FRONT) {
         VM_STATE = STOPPED;
       }
       break;
@@ -55,7 +62,7 @@ void VehicleMovementController::update(int currentMilli) {
       if(joystickState == JOY_HIGH) {
         VM_STATE = START_ANTI_PLUGGING;
       }
-      else if(joystickState == JOY_MID || (detectedObjectState == BACKSTOP || detectedObjectState == BOTHSTOP)) {
+      else if(joystickState == JOY_MID || detectedObjectState == BACK) {
         VM_STATE = STOPPED;
       }
       break;
@@ -63,50 +70,17 @@ void VehicleMovementController::update(int currentMilli) {
       VM_STATE = ANTI_PLUGGING;
       break;
     case ANTI_PLUGGING:
-      if(joystickState == JOY_LOW && currentMilli - engagedPluggingTime > antiPlugDelay && detectedObjectState != BACKSTOP && detectedObjectState != BOTHSTOP) {
+      if(joystickState == JOY_LOW && currentMilli - engagedPluggingTime > antiPlugDelay && detectedObjectState != BACK) {
         VM_STATE = REVERSE;
       }
-      else if(joystickState == JOY_HIGH && currentMilli - engagedPluggingTime > antiPlugDelay && detectedObjectState != FRONTSTOP && detectedObjectState != BOTHSTOP) {
+      else if(joystickState == JOY_HIGH && currentMilli - engagedPluggingTime > antiPlugDelay && detectedObjectState != FRONT) {
         VM_STATE = FORWARD;
-      }
-      break;
-    case LOCK_FORWARD:
-      if(joystickState == JOY_LOW && (detectedObjectState != BACKSTOP && detectedObjectState != BOTHSTOP)) {
-        VM_STATE = REVERSE;
-      }
-      else if(detectedObjectState == BOTHSTOP) {
-        VM_STATE = LOCK_BOTH;
-      }
-      else if(joystickState == JOY_MID) {
-        VM_STATE = STOPPED;
-      }
-      break;
-    case LOCK_REVERSE:
-      if(joystickState == JOY_HIGH && (detectedObjectState != FRONTSTOP && detectedObjectState != BOTHSTOP)) {
-        VM_STATE = FORWARD;
-      }
-      else if(detectedObjectState == BOTHSTOP) {
-        VM_STATE = LOCK_BOTH;
-      }
-      else if(joystickState == JOY_MID) {
-        VM_STATE = STOPPED;
-      }
-      break;
-    case LOCK_BOTH:
-      if(detectedObjectState == CLEAR) {
-        VM_STATE = STOPPED;
-      }
-      if(detectedObjectState == FRONTSTOP) {
-        VM_STATE = LOCK_FORWARD;
-      }
-      if(detectedObjectState == BACKSTOP) {
-        VM_STATE = LOCK_REVERSE;
       }
       break;
     default:
       this -> VM_STATE = START;
   }
-  //Actions
+  // Actions
   switch(this -> VM_STATE) {
     case START:
       break;
@@ -125,16 +99,13 @@ void VehicleMovementController::update(int currentMilli) {
     case ANTI_PLUGGING:
       stopVehicle();
       break;
-    case LOCK_FORWARD:
-      break;
-    case LOCK_REVERSE:
-      break;
-    case LOCK_BOTH:
-      break;
     default:
       stopVehicle();
   }
-  //Update buzzerState last
+
+  // Update buzzerState last
+  // BuzzerControl is it's own state machine controlling intermittent/constant buzzing depending on an objects distance
+  Serial.println(lowestDistance);
   buzzerControl -> update(lowestDistance);
 }
 
@@ -167,16 +138,11 @@ enum VehicleMovementController::JOYSTICK_STATES VehicleMovementController::getJo
 }
 
 enum VehicleMovementController::DETECTED_OBJECT_STATES VehicleMovementController::getDetectedObjectState(int frontDistance, int backDistance){
-
-
-  if(frontDistance <= stopDistance && backDistance <= stopDistance) {
-    return BOTHSTOP;
-  }
-  else if(frontDistance <= stopDistance) {
-    return FRONTSTOP;
+  if(frontDistance <= stopDistance) {
+    return FRONT;
   }
   else if(backDistance <= stopDistance) {
-    return BACKSTOP;
+    return BACK;
   }
   else {
     return CLEAR;
@@ -197,12 +163,6 @@ String VehicleMovementController::getState() {
       return "START_ANTI_PLUGGING";
     case ANTI_PLUGGING:
       return "ANTI_PLUGGING";
-    case LOCK_FORWARD:
-      return "LOCK_FORWARD";
-    case LOCK_REVERSE:
-      return "LOCK_REVERSE";
-    case LOCK_BOTH:
-      return "LOCK_BOTH";
     default:
       return "default";
   }
