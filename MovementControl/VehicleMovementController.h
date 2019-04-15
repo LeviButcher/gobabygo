@@ -1,7 +1,17 @@
+/*
+    VehicleMovementControl
+    Activates 2 relays the contol forward and reverse circuits on a battery controlled vehicle.
+    Also, hooked to 2 rangefinders that detect if a object is so close to the vehicle
+    If so then the Vehicle will stop
+    A delay is also configured to prevent going back and forth between forward and stop frequently
+
+    Author: Levi Butcher, Sean Rickard, Bradley, Robert
+ */
 #pragma once
 
 #include "JoystickControlledActivator.h"
 #include "Rangefinder.h"
+#include "DistanceBuzzerControl.h"
 
 class VehicleMovementController {
   private:
@@ -9,25 +19,29 @@ class VehicleMovementController {
     JoystickControlledActivator* reverseJoystickRelay;
     Rangefinder* rearRangefinder;
     Rangefinder* frontRangefinder;
+    DistanceBuzzerControl* buzzerControl;
     int antiPlugDelay;
-    int buzzerPin;
     int forwardThreshold;
     int reverseThreshold;
-    int buzzerDistance;
     int stopDistance;
-    int plugging = false;
     int engagedPluggingTime = 0;
+    int timeTillUpdate;
+    enum VM_STATES {START, STOPPED, FORWARD, REVERSE, START_ANTI_PLUGGING, ANTI_PLUGGING};
+    enum JOYSTICK_STATES {JOY_HIGH, JOY_LOW, JOY_MID};
+    enum DETECTED_OBJECT_STATES {FRONT, BACK, CLEAR};
+    VM_STATES VM_STATE;
 
     void engageForward();
     void engageReverse();
-    void deactivateMovement();
+    enum JOYSTICK_STATES getJoystickState();
+    enum DETECTED_OBJECT_STATES getDetectedObjectState(int frontDistance, int backDistance);
 
 
   public:
-    VehicleMovementController(int joystickYPin, int forwardThreshold, int reverseThreshold, int forwardRelayPin, int reverseRelayPin, int frontRangefinderTriggerPin, int  frontRangefinderEchoPin, int backRangefinderTriggerPin, int backRangefinderEchoPin, int antiPlugDelay, int buzzerPin, int buzzerDistance, int stopDistance);
+    VehicleMovementController(JoystickControlledActivator* forwardRelay, JoystickControlledActivator* reverseRelay, Rangefinder* frontRangefinder, Rangefinder* rearRangefinder, DistanceBuzzerControl* buzzerControl, int forwardThreshold, int reverseThreshold, int antiPlugDelay, int stopDistance, int timeTillUpdate);
+
     void update(int currentMilli);
-    void buzzToggle();
-    void buzzOn();
-    void buzzOff();
-    
+    void stopVehicle();
+    String getState();
+
 };
