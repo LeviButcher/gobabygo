@@ -26,7 +26,7 @@ This contains code that was modified from an example to allow a selector switch 
 
 [Original Source](https://learn.sparkfun.com/tutorials/mp3-player-shield-hookup/example-sketch-mp3-trigger)
 
-# Internal Libraries
+# Internal Libraries Dependencies
 
 - Servo Control
   - Servo Library provided by Arduino
@@ -40,9 +40,10 @@ This contains code that was modified from an example to allow a selector switch 
 
 1. clone or download this repo
 1. Copy MovementControl and/or ServoControl into the libraries folder on your machine
-1. This will be at `/home/{user}/Arduino/libraries` on Linux
-1. This will be at `C\Users\{user}\Documents\Arduino\libraries` on Windows
-1. Then you can create a new Arduino ino script and do `#include<VehicleMovementControl.h>` or whatever other class you'd like to use
+  1. This will be at `/home/{user}/Arduino/libraries` on Linux
+  1. This will be at `C\Users\{user}\Documents\Arduino\libraries` on Windows
+1. Install Internal Libraries dependencies above
+1. Then create a new Arduino ino script and do `#include<VehicleMovementControl.h>` or whatever other class you'd like to use
 1. View the examples for how to use them correctly
 
 ### HOT TIP
