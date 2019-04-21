@@ -1,3 +1,14 @@
+/*
+  DistanceBuzzerControl
+
+  DistanceBuzzerControl will either constantly buzz a buzzer, intermittenly buzz a buzzer, or not buzz a buzzer depending on internal state
+
+  Pass in a distance to start intermittent Buzzing and a distance for constant buzzing and pass
+  a distance from a object, then the update method will handle the states for you
+
+  Written By: Levi Butcher
+ */
+
 #include "DistanceBuzzerControl.h"
 #include "Arduino.h"
 

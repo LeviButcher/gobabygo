@@ -1,3 +1,12 @@
+/*
+  Rangefinder
+
+  Uses the NewPing library to retrieve the distance from a object
+  from a sensor
+
+  Written By: Levi Butcher, Sean Rickard
+ */
+
 #include "Rangefinder.h"
 #include "Arduino.h"
 #include "NewPing.h"

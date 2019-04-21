@@ -1,5 +1,7 @@
 /*
+  Servo Control is a abstract parent class that allows a child of this class to use the values from a joystick Pin to control the movement of a servo attached to this class
 
+  Written By: Levi Butcher, Sean Ricard
  */
 
 #include "Arduino.h"
@@ -18,4 +20,8 @@ ServoControl::ServoControl(int newMaxDegreesForTurn, int xPin, int middleDegrees
 void ServoControl::attach(int servoPin) {
   steeringServo.attach(servoPin);
   steeringServo.write(middleDegrees);
+}
+
+int ServoControl::getJoystickPosition() {
+  return analogRead(joystickXPin);
 }

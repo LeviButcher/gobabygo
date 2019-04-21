@@ -1,5 +1,7 @@
 /*
+  SubChild of ServoControl, this control will move the position of the Servo to the exact value of the joystick Pin. It will never move farther then the maxDegrees allowed from centerDegrees
 
+  Written By: Levi Butcher, Sean Rickard
  */
 
 #pragma once
@@ -17,7 +19,6 @@ class AnalogServoControl : public ServoControl
     int historyIndex = 0;
     int currentPosition = middleDegrees;
     void addToHistory(int position);
-    int getJoystickPosition();
     int averageUserIntent();
 
   public:

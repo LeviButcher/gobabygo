@@ -1,5 +1,7 @@
 /*
+  SubChild of ServoControl, this control will move the position of the Servo to the exact value of the joystick Pin. It will never move farther then the maxDegrees allowed from centerDegrees
 
+  Written By: Levi Butcher, Sean Rickard
  */
 
  #include "Arduino.h"
@@ -31,10 +33,6 @@
 void AnalogServoControl::addToHistory(int position) {
   history[historyIndex] = position;
   historyIndex = (historyIndex + 1) % HISTORY_LENGTH;
-}
-
-int AnalogServoControl::getJoystickPosition() {
-  return analogRead(joystickXPin);
 }
 
 int AnalogServoControl::averageUserIntent() {
