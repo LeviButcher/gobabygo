@@ -22,7 +22,7 @@ class AnalogServoControl : public ServoControl
 
   public:
     AnalogServoControl(int newMaxDegreesForTurn, int xPin);
-
+    AnalogServoControl(int newMaxDegreesForTurn, int xPin, int centerDegrees);
 
     void update();
 };

@@ -10,6 +10,10 @@
 
  }
 
+ AnalogServoControl::AnalogServoControl(int newMaxDegreesForTurn, int xPin, int centerDegrees) : ServoControl(newMaxDegreesForTurn, xPin, centerDegrees) {
+
+ }
+
  void AnalogServoControl::update() {
   int xPosition = getJoystickPosition();
   addToHistory(xPosition);
@@ -21,7 +25,7 @@
     steeringServo.write(pos);
     currentPosition = pos;
   }
-  Serial.println(pos);
+  Serial.println(xPosition);
  }
 
 void AnalogServoControl::addToHistory(int position) {
