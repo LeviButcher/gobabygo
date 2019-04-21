@@ -13,10 +13,11 @@ class ServoControl {
       int maxDegreesForTurn;
       Servo steeringServo;
       int joystickXPin;
-      const int MID_DEGREES = 90;
+      int middleDegrees = 90;
 
     public:
       ServoControl(int newMaxDegreesForTurn, int xPin);
+      ServoControl(int newMaxDegreesForTurn, int xPin, int middleDegrees);
 
       void attach(int servoPin);
 

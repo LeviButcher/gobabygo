@@ -1,7 +1,5 @@
 #include "VehicleMovementController.h"
 #include "AnalogServoControl.h"
-#include "BinaryServoControl.h"
-#include "ModBinaryServoControl.h"
 
 const int JOYSTICK_Y_PIN = A1;
 const int JOYSTICK_X_PIN = A0;

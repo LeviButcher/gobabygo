@@ -14,21 +14,21 @@
  void ModBinaryServoControl::update() {
      int xValue = analogRead(joystickXPin);
 
-     if(xValue < leftTrigger && currentPosition > MID_DEGREES - maxDegreesForTurn) {
+     if(xValue < leftTrigger && currentPosition > middleDegrees - maxDegreesForTurn) {
          currentPosition--;
          steeringServo.write(currentPosition);
      }
-     else if(xValue > rightTrigger && currentPosition < MID_DEGREES + maxDegreesForTurn) {
+     else if(xValue > rightTrigger && currentPosition < middleDegrees + maxDegreesForTurn) {
          currentPosition++;
          steeringServo.write(currentPosition);
      }
      else {
          //Joystick is not within triggers, begin approaching center
-         if(currentPosition < MID_DEGREES) {
+         if(currentPosition < middleDegrees) {
              currentPosition++;
              steeringServo.write(currentPosition);
          }
-         else if(currentPosition > MID_DEGREES) {
+         else if(currentPosition > middleDegrees) {
              currentPosition--;
              steeringServo.write(currentPosition);
          }
