@@ -1,9 +1,12 @@
 #pragma once
 
+#include "NewPing.h"
+
 class Rangefinder {
   private:
     int triggerPin;
     int echoPin;
+    NewPing* sonar;
     static const int historyLength = 5;
     int history [historyLength];
     int calcDistance();

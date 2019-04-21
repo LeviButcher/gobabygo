@@ -12,7 +12,7 @@ const int BACK_RANGEFINDER_ECHO_PIN = 13;
 const int ANTI_PLUG_DELAY = 1000; // Milliseconds
 const int BUZZER_PIN = 7;
 const int BUZZER_DISTANCE = 60; // Inches
-const int STOP_DISTANCE = 30; // Inches
+const int STOP_DISTANCE = 15; // Inches
 const int TIME_TILL_VEHICLE_UPDATE = 100; // Milliseconds
 
 VehicleMovementController* vehicle;

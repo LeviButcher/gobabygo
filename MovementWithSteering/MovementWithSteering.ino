@@ -17,19 +17,29 @@ const int BACK_RANGEFINDER_TRIGGER_PIN = 12;
 const int BACK_RANGEFINDER_ECHO_PIN = 13;
 const int ANTI_PLUG_DELAY = 1000;
 const int BUZZER_PIN = 7;
-const int BUZZER_DISTANCE = 96;
-const int STOP_DISTANCE = 48;
+const int BUZZER_DISTANCE = 36; // Inches
+const int STOP_DISTANCE = 12; // Inches
+const int TIME_TILL_VEHICLE_UPDATE = 100; // Milliseconds
 
 VehicleMovementController* vehicle;
+Rangefinder* rearRangefinder;
+Rangefinder* frontRangefinder;
+JoystickControlledActivator* forwardJoystickRelay;
+JoystickControlledActivator* reverseJoystickRelay;
+DistanceBuzzerControl* buzzerControl;
 AnalogServoControl myNewServo(MAX_DEGREES, JOYSTICK_X_PIN);
 
 void setup() {
-  vehicle = new VehicleMovementController (JOYSTICK_Y_PIN, FORWARD_THRESHOLD, REVERSE_THRESHOLD, FORWARD_RELAY_PIN, REVERSE_RELAY_PIN, FRONT_RANGEFINDER_TRIGGER_PIN, FRONT_RANGEFINDER_ECHO_PIN, BACK_RANGEFINDER_TRIGGER_PIN, BACK_RANGEFINDER_ECHO_PIN, ANTI_PLUG_DELAY, BUZZER_PIN, BUZZER_DISTANCE, STOP_DISTANCE);
+  frontRangefinder = new Rangefinder(FRONT_RANGEFINDER_TRIGGER_PIN, FRONT_RANGEFINDER_ECHO_PIN);
+  rearRangefinder = new Rangefinder(BACK_RANGEFINDER_TRIGGER_PIN, BACK_RANGEFINDER_ECHO_PIN);
+  forwardJoystickRelay = new JoystickControlledActivator(JOYSTICK_Y_PIN, FORWARD_RELAY_PIN);
+  reverseJoystickRelay = new JoystickControlledActivator(JOYSTICK_Y_PIN, REVERSE_RELAY_PIN);
+  buzzerControl = new DistanceBuzzerControl(BUZZER_PIN, BUZZER_DISTANCE, STOP_DISTANCE);
+
+  vehicle = new VehicleMovementController(forwardJoystickRelay, reverseJoystickRelay, frontRangefinder, rearRangefinder, buzzerControl, FORWARD_THRESHOLD, REVERSE_THRESHOLD, ANTI_PLUG_DELAY, STOP_DISTANCE, TIME_TILL_VEHICLE_UPDATE);
   myNewServo.attach(SERVO_PIN);
-  pinMode(5, OUTPUT);
-  digitalWrite(5, HIGH);
   Serial.begin(9600);
-  
+
 }
 
 void loop() {
