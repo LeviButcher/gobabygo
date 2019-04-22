@@ -10,17 +10,17 @@
 #pragma once
 
 #include "NewPing.h"
+#include "Smoother.h"
 
 class Rangefinder {
   private:
     int triggerPin;
     int echoPin;
     NewPing* sonar;
-    static const int historyLength = 5;
-    int history [historyLength];
+    static const int HISTORY_LENGTH = 5;
+    Smoother* history;
     int calcDistance();
-    void addToHistory(int distance);
-    int lowestDistance();
+
   public:
     Rangefinder(int triggerPin, int echoPin);
     int getDistance();

@@ -8,6 +8,7 @@
 
 #include "Arduino.h"
 #include "ServoControl.h"
+#include "Smoother.h"
 
 class AnalogServoControl : public ServoControl
 {
@@ -15,8 +16,7 @@ class AnalogServoControl : public ServoControl
     static const int HISTORY_LENGTH = 15;
     static const int MAX_JOYSTICK_VAL = 1023;
     static const int MIN_JOYSTICK_VAL = 0;
-    int history [HISTORY_LENGTH] = {-1};
-    int historyIndex = 0;
+    Smoother* history;
     int currentPosition = middleDegrees;
     void addToHistory(int position);
     int averageUserIntent();
