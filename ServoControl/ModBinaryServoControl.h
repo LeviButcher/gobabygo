@@ -13,7 +13,7 @@ class ModBinaryServoControl : public ServoControl
   private:
    int leftTrigger;
    int rightTrigger;
-   int currentPosition = MID_DEGREES;
+   int currentPosition = middleDegrees;
   public:
     ModBinaryServoControl(int newMaxDegreesForTurn, int xPin, int newLeftTrigger, int newRightTrigger);
 

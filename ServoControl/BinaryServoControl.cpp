@@ -14,11 +14,11 @@
  void BinaryServoControl::update() {
      int xValue = analogRead(joystickXPin);
 
-     if(xValue < leftTrigger && currentPosition > MID_DEGREES - maxDegreesForTurn) {
+     if(xValue < leftTrigger && currentPosition > middleDegrees - maxDegreesForTurn) {
          currentPosition--;
          steeringServo.write(currentPosition);
      }
-     else if(xValue > rightTrigger && currentPosition < MID_DEGREES + maxDegreesForTurn) {
+     else if(xValue > rightTrigger && currentPosition < middleDegrees + maxDegreesForTurn) {
          currentPosition++;
          steeringServo.write(currentPosition);
      }

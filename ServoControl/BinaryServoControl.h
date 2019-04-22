@@ -13,7 +13,7 @@ class BinaryServoControl : public ServoControl
   private:
     int leftTrigger;
     int rightTrigger;
-    int currentPosition = MID_DEGREES;
+    int currentPosition = middleDegrees;
 
   public:
     BinaryServoControl(int newMaxDegreesForTurn, int xPin, int newLeftTrigger, int newRightTrigger);

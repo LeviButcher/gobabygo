@@ -1,14 +1,26 @@
+/*
+  Rangefinder
+
+  Uses the NewPing library to retrieve the distance from a object
+  from a sensor
+
+  Written By: Levi Butcher, Sean Rickard
+ */
+
 #pragma once
+
+#include "NewPing.h"
+#include "Smoother.h"
 
 class Rangefinder {
   private:
     int triggerPin;
     int echoPin;
-    static const int historyLength = 5;
-    int history [historyLength];
+    NewPing* sonar;
+    static const int HISTORY_LENGTH = 5;
+    Smoother* history;
     int calcDistance();
-    void addToHistory(int distance);
-    int lowestDistance();
+
   public:
     Rangefinder(int triggerPin, int echoPin);
     int getDistance();
