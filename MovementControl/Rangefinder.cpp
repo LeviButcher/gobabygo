@@ -12,6 +12,8 @@
 #include "NewPing.h"
 #include "Smoother.h"
 
+#define VERY_LARGE_NUMBER 1000000
+
 Rangefinder::Rangefinder(int triggerPin, int echoPin) {
   this -> triggerPin = triggerPin;
   this -> echoPin = echoPin;
@@ -28,5 +30,9 @@ int Rangefinder::getDistance() {
 }
 
 int Rangefinder::calcDistance() {
-  return sonar -> ping_in();
+  int distance =  sonar -> ping_in();
+  if(distance == 0) {
+    distance = VERY_LARGE_NUMBER;
+  }
+  return distance;
 }
