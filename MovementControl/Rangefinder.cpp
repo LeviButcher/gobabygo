@@ -12,7 +12,7 @@
 #include "NewPing.h"
 #include "Smoother.h"
 
-#define VERY_LARGE_NUMBER 1000000
+#define VERY_LARGE_NUMBER 1000
 
 Rangefinder::Rangefinder(int triggerPin, int echoPin) {
   this -> triggerPin = triggerPin;
