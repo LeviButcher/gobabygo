@@ -13,6 +13,7 @@
 #include "Smoother.h"
 
 #define VERY_LARGE_NUMBER 1000
+#define MAX_DISTANCE 500 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
 
 Rangefinder::Rangefinder(int triggerPin, int echoPin) {
   this -> triggerPin = triggerPin;
@@ -20,7 +21,7 @@ Rangefinder::Rangefinder(int triggerPin, int echoPin) {
   pinMode(this -> triggerPin, OUTPUT);
   pinMode(this -> echoPin, INPUT);
   this -> history = new Smoother(HISTORY_LENGTH);
-  this -> sonar = new NewPing(triggerPin, echoPin, 500);
+  this -> sonar = new NewPing(triggerPin, echoPin, MAX_DISTANCE);
 }
 
 int Rangefinder::getDistance() {
