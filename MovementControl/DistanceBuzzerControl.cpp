@@ -11,6 +11,8 @@
 
 #include "DistanceBuzzerControl.h"
 #include "Arduino.h"
+#include <Wire.h>
+#include <MedianFilter.h>
 
 DistanceBuzzerControl::DistanceBuzzerControl(int buzzerPin, int intermittentDistance, int constantDistance) {
   this -> buzzerPin = buzzerPin;
@@ -58,7 +60,7 @@ void DistanceBuzzerControl::update(int distance){
   //actions
   switch(DB_STATE){
     case START:
-      digitalWrite(buzzerPin, false);
+      digitalWrite(buzzerPin, true);
       break;
     case INTERMITTENT:
       static bool lastState = false;
@@ -66,12 +68,12 @@ void DistanceBuzzerControl::update(int distance){
       lastState = !lastState;
       break;
     case CONSTANT:
-      digitalWrite(buzzerPin, true);
+      digitalWrite(buzzerPin, false);
       break;
     case OFF:
-      digitalWrite(buzzerPin, false);
+      digitalWrite(buzzerPin, true);
       break;
     default:
-      digitalWrite(buzzerPin, false);
+      digitalWrite(buzzerPin, true);
   }
 }

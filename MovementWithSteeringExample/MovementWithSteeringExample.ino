@@ -37,12 +37,10 @@ void setup() {
 
   vehicle = new VehicleMovementController(forwardJoystickRelay, reverseJoystickRelay, frontRangefinder, rearRangefinder, buzzerControl, FORWARD_THRESHOLD, REVERSE_THRESHOLD, ANTI_PLUG_DELAY, STOP_DISTANCE, TIME_TILL_VEHICLE_UPDATE);
   myNewServo.attach(SERVO_PIN);
-  Serial.begin(9600);
-
 }
 
 void loop() {
   int mille = millis();
-  vehicle -> update(mille);
   myNewServo.update();
+  vehicle -> update(mille);
 }

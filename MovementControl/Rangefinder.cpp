@@ -11,9 +11,13 @@
 #include "Arduino.h"
 #include "NewPing.h"
 #include "Smoother.h"
+#include <Wire.h>
+#include <MedianFilter.h>
 
 #define VERY_LARGE_NUMBER 1000
-#define MAX_DISTANCE 500 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+#define MAX_DISTANCE 450 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+
+MedianFilter filter(31,0);
 
 Rangefinder::Rangefinder(int triggerPin, int echoPin) {
   this -> triggerPin = triggerPin;
@@ -31,7 +35,10 @@ int Rangefinder::getDistance() {
 }
 
 int Rangefinder::calcDistance() {
-  int distance =  sonar -> ping_in();
+  unsigned int o,uS = sonar -> ping();
+  filter.in(uS);
+  o = filter.out();
+  int distance = sonar -> convert_in(o);
   if(distance == 0) {
     distance = VERY_LARGE_NUMBER;
   }
