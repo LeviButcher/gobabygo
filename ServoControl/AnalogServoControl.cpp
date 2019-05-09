@@ -24,6 +24,18 @@
   int pos = map(average, MIN_JOYSTICK_VAL, MAX_JOYSTICK_VAL, middleDegrees - maxDegreesForTurn, middleDegrees +
     maxDegreesForTurn);
   pos = constrain(pos, middleDegrees - maxDegreesForTurn, middleDegrees + maxDegreesForTurn);
+
+  // make right left and left right
+  if(pos > middleDegrees) {
+    int difference = pos - middleDegrees;
+    pos = middleDegrees - difference;
+  }
+  else if(pos < middleDegrees) {
+    int difference = middleDegrees - pos;
+    pos = middleDegrees + difference;
+  }
+
+
   if(currentPosition != pos) {
     steeringServo.write(pos);
     currentPosition = pos;
