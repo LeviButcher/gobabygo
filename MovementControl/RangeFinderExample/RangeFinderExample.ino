@@ -21,5 +21,5 @@ void loop() {
   int distance = frontRanger -> getDistance();
   Serial.println(distance);
   buzzerControl -> update(distance);
-  delay(100);
+  delay(1000);
 }
