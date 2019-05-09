@@ -10,7 +10,7 @@
 #include "JoystickControlledActivator.h"
 
 
-JoystickControlledActivator::JoystickControlledActivator(int joystickPin, int activatePin) : JoystickControlledActivator(joystickPin, activatePin, false) {
+JoystickControlledActivator::JoystickControlledActivator(int joystickPin, int activatePin) : JoystickControlledActivator(joystickPin, activatePin, true) {
 }
 
 JoystickControlledActivator::JoystickControlledActivator(int joystickPin, int activatePin, bool active) {
@@ -22,12 +22,12 @@ JoystickControlledActivator::JoystickControlledActivator(int joystickPin, int ac
 }
 
 void JoystickControlledActivator::activate() {
-  digitalWrite(this -> activatePin, HIGH);
+  digitalWrite(this -> activatePin, LOW);
   this -> active = true;
 }
 
 void JoystickControlledActivator::deactivate() {
-  digitalWrite(this -> activatePin, LOW);
+  digitalWrite(this -> activatePin, HIGH);
   this -> active = false;
 }
 
