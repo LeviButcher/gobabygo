@@ -31,12 +31,24 @@ void VehicleMovementController::update(int currentMilli) {
     return;
   }
   timeSinceLastUpdate = currentMilli;
+
+
+
   // gather variables
   int frontDistance = frontRangefinder -> getDistance();
   int backDistance = rearRangefinder -> getDistance();
   int lowestDistance = frontDistance <= backDistance ? frontDistance : backDistance;
+
+  // Update buzzerState first
+  // BuzzerControl is it's own state machine controlling intermittent/constant buzzing depending on an objects distance
+  // this statemachine depends on it
+  Serial.println(lowestDistance);
+  buzzerControl -> update(lowestDistance);
+  // gather states
   JOYSTICK_STATES joystickState = getJoystickState();
   DETECTED_OBJECT_STATES detectedObjectState = getDetectedObjectState(frontDistance, backDistance);
+
+
 
   // Transitions
   switch(this -> VM_STATE) {
@@ -103,11 +115,6 @@ void VehicleMovementController::update(int currentMilli) {
     default:
       stopVehicle();
   }
-
-  // Update buzzerState last
-  // BuzzerControl is it's own state machine controlling intermittent/constant buzzing depending on an objects distance
-  Serial.println(lowestDistance);
-  buzzerControl -> update(lowestDistance);
 }
 
 void VehicleMovementController::stopVehicle(){
@@ -138,11 +145,17 @@ enum VehicleMovementController::JOYSTICK_STATES VehicleMovementController::getJo
   }
 }
 
+/*
+  Returns a enum of if a object is detected in the FRONT, BACK, or if its CLEAR
+  Precondition: BuzzerControl has been updated before call
+ */
 enum VehicleMovementController::DETECTED_OBJECT_STATES VehicleMovementController::getDetectedObjectState(int frontDistance, int backDistance){
-  if(frontDistance <= stopDistance) {
+  // Only trust distance if buzzer is currently on constantly
+  // checks for deadzone
+  if(frontDistance <= stopDistance && buzzerControl -> isConstantBuzz()) {
     return FRONT;
   }
-  else if(backDistance <= stopDistance) {
+  else if(backDistance <= stopDistance && buzzerControl -> isConstantBuzz()) {
     return BACK;
   }
   else {

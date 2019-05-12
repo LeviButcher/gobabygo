@@ -46,10 +46,10 @@ void DistanceBuzzerControl::update(int distance){
       }
       break;
     case OFF:
-      if(distance < intermittentDistance && distance > constantDistance) {
+      if(distance < intermittentDistance && distance > constantDistance && distance != 0) {
         DB_STATE = INTERMITTENT;
       }
-      else if(distance < constantDistance) {
+      else if(distance < constantDistance && distance != 0) {
         DB_STATE = CONSTANT;
       }
       break;
@@ -76,4 +76,8 @@ void DistanceBuzzerControl::update(int distance){
     default:
       digitalWrite(buzzerPin, true);
   }
+}
+
+bool DistanceBuzzerControl::isConstantBuzz() {
+  return DB_STATE == CONSTANT;
 }

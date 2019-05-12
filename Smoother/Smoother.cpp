@@ -39,9 +39,9 @@ int Smoother::smallestValueInHistory() {
 }
 
 int Smoother::averageHistory() {
-  int total = 0;
-  int count = 0;
-  for(int i = 0; i < historyLength; i++) {
+  int total = history[1];
+  int count = 1;
+  for(int i = 1; i < historyLength; i++) {
    if(history[i] != -1) {
       total = total + history[i];
       count++;

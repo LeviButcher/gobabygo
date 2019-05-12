@@ -24,4 +24,5 @@ class DistanceBuzzerControl {
   public:
     DistanceBuzzerControl(int buzzerPin, int intermittentDistance, int constantDistance);
     void update(int distance);
+    bool isConstantBuzz();
 };
